@@ -6,322 +6,664 @@
     <title>Top Jugadores por Precio</title>
 <style>
     * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        padding: 20px;
-    }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
 
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        backdrop-filter: blur(10px);
-    }
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
 
-    .header {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        color: white;
-        text-align: center;
-        padding: 30px;
-        position: relative;
-        overflow: hidden;
-    }
+.header {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    text-align: center;
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+}
 
-    .header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: shimmer 3s ease-in-out infinite;
-    }
+.header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: shimmer 3s ease-in-out infinite;
+}
 
-    @keyframes shimmer {
-        0%, 100% { transform: rotate(0deg); }
-        50% { transform: rotate(180deg); }
-    }
+@keyframes shimmer {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+}
 
-    .header h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 10px;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        position: relative;
-        z-index: 1;
-    }
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 1;
+}
 
-    .header p {
-        font-size: 1.2rem;
-        opacity: 0.9;
-        position: relative;
-        z-index: 1;
-    }
+.header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
 
-    .wildcard {
-        position: absolute;
-        right: 30px;
-        top: 50%;
+.wildcard {
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 80px;
+    background: linear-gradient(145deg, #ff6b6b, #ffd93d);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: 2px solid white;
+    z-index: 2;
+}
+
+.table-container {
+    padding: 30px;
+    overflow-x: auto;
+    max-height: 70vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.table-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    border-radius: 4px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    min-width: 600px;
+}
+
+thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+th {
+    padding: 20px 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 3px solid rgba(255,255,255,0.3);
+    white-space: nowrap;
+}
+
+th:first-child {
+    text-align: center;
+    width: 80px;
+}
+
+tbody tr {
+    transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+tbody tr:hover {
+    background: linear-gradient(90deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+tbody tr:nth-child(odd) {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+tbody tr:nth-child(even) {
+    background: rgba(248, 249, 250, 0.8);
+}
+
+tbody tr:nth-child(odd):hover,
+tbody tr:nth-child(even):hover {
+    background: linear-gradient(90deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+}
+
+td {
+    padding: 15px;
+    font-size: 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    white-space: nowrap;
+}
+
+.rank-number {
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-align: center;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.rank-top {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.rank-bottom {
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+}
+
+/* Estilos automáticos para rankings - TOP 1-32 (Verde) */
+tbody tr:nth-child(-n+32) .rank-number {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+/* Estilos automáticos para rankings - 33 en adelante (Naranja) */
+tbody tr:nth-child(n+33) .rank-number {
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+}
+
+.player-name {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.team-name {
+    font-weight: 500;
+    color: #34495e;
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    padding: 5px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.position {
+    background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: inline-block;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.value {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #27ae60;
+    text-align: right;
+}
+
+.value::before {
+    content: "💰 ";
+}
+
+.stats {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 20px;
+    text-align: center;
+    color: #495057;
+    font-weight: 500;
+    border-top: 3px solid rgba(102, 126, 234, 0.3);
+}
+
+.scroll-indicator {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    background: rgba(102, 126, 234, 0.8);
+    color: white;
+    padding: 10px;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    animation: bounce 2s infinite;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
         transform: translateY(-50%);
-        width: 60px;
-        height: 80px;
-        background: linear-gradient(145deg, #ff6b6b, #ffd93d);
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        color: white;
-        font-weight: bold;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        border: 2px solid white;
-        z-index: 2;
     }
+    40% {
+        transform: translateY(-60%);
+    }
+    60% {
+        transform: translateY(-55%);
+    }
+}
 
+/* RESPONSIVE DESIGN */
+
+/* Tablets grandes (1024px - 1199px) */
+@media (max-width: 1199px) {
+    .container {
+        max-width: 95%;
+    }
+    
+    .header h1 {
+        font-size: 2.2rem;
+    }
+    
     .table-container {
-        padding: 30px;
-        overflow-x: auto;
-        max-height: 70vh;
-        overflow-y: auto;
-        position: relative;
+        padding: 25px;
     }
-
-    .table-container::-webkit-scrollbar {
-        width: 8px;
+    
+    th, td {
+        padding: 12px 10px;
+        font-size: 0.95rem;
     }
+}
 
-    .table-container::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 4px;
-    }
-
-    .table-container::-webkit-scrollbar-thumb {
-        background: linear-gradient(135deg, #4facfe, #00f2fe);
-        border-radius: 4px;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    }
-
-    thead {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-    }
-
-    th {
-        padding: 20px 15px;
-        text-align: left;
-        font-weight: 600;
-        font-size: 1.1rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        border-bottom: 3px solid rgba(255,255,255,0.3);
-    }
-
-    th:first-child {
-        text-align: center;
-        width: 80px;
-    }
-
-    tbody tr {
-        transition: all 0.3s ease;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
-        animation: fadeInUp 0.6s ease forwards;
-    }
-
-    tbody tr:hover {
-        background: linear-gradient(90deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
-        transform: translateX(5px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-
-    tbody tr:nth-child(odd) {
-        background: rgba(255, 255, 255, 0.8);
-    }
-
-    tbody tr:nth-child(even) {
-        background: rgba(248, 249, 250, 0.8);
-    }
-
-    tbody tr:nth-child(odd):hover,
-    tbody tr:nth-child(even):hover {
-        background: linear-gradient(90deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
-    }
-
-    td {
+/* Tablets (768px - 1023px) */
+@media (max-width: 1023px) {
+    body {
         padding: 15px;
-        font-size: 1rem;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
     }
-
-    .rank-number {
-        font-weight: bold;
-        font-size: 1.2rem;
-        text-align: center;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
+    
+    .container {
+        border-radius: 15px;
+    }
+    
+    .header {
+        padding: 25px 20px;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        margin: 0 auto;
-        color: white;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
-
-    .rank-top {
-        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-        box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+    
+    .header h1 {
+        font-size: 2rem;
+        margin-bottom: 8px;
     }
-
-    .rank-bottom {
-        background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
-        box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+    
+    .header p {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
     }
-
-    /* Estilos automáticos para rankings - TOP 1-32 (Verde) */
-    tbody tr:nth-child(-n+32) .rank-number {
-        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-        box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+    
+    .wildcard {
+        position: static;
+        transform: none;
+        width: 50px;
+        height: 65px;
+        font-size: 1.3rem;
     }
-
-    /* Estilos automáticos para rankings - 33 en adelante (Naranja) */
-    tbody tr:nth-child(n+33) .rank-number {
-        background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
-        box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+    
+    .table-container {
+        padding: 20px;
+        max-height: 60vh;
     }
-
-    .player-name {
-        font-weight: 600;
-        color: #2c3e50;
+    
+    table {
+        min-width: 550px;
+    }
+    
+    th {
+        padding: 15px 8px;
+        font-size: 1rem;
+    }
+    
+    td {
+        padding: 12px 8px;
+        font-size: 0.9rem;
+    }
+    
+    .rank-number {
+        width: 35px;
+        height: 35px;
         font-size: 1.1rem;
     }
-
+    
+    .player-name {
+        font-size: 1rem;
+    }
+    
     .team-name {
-        font-weight: 500;
-        color: #34495e;
-        background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-        padding: 5px 12px;
-        border-radius: 20px;
-        display: inline-block;
+        font-size: 0.8rem;
+        padding: 4px 8px;
+    }
+    
+    .position {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+    }
+    
+    .value {
+        font-size: 1rem;
+    }
+}
+
+/* Móviles grandes (481px - 767px) */
+@media (max-width: 767px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        border-radius: 12px;
+    }
+    
+    .header {
+        padding: 20px 15px;
+    }
+    
+    .header h1 {
+        font-size: 1.8rem;
+        margin-bottom: 5px;
+    }
+    
+    .header p {
+        font-size: 1rem;
+        margin-bottom: 12px;
+    }
+    
+    .wildcard {
+        width: 45px;
+        height: 55px;
+        font-size: 1.2rem;
+    }
+    
+    .table-container {
+        padding: 15px;
+        max-height: 55vh;
+    }
+    
+    .table-container::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    table {
+        min-width: 500px;
+    }
+    
+    th {
+        padding: 12px 6px;
         font-size: 0.9rem;
-        text-transform: uppercase;
         letter-spacing: 0.5px;
     }
-
+    
+    td {
+        padding: 10px 6px;
+        font-size: 0.85rem;
+    }
+    
+    .rank-number {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+    
+    .player-name {
+        font-size: 0.95rem;
+    }
+    
+    .team-name {
+        font-size: 0.75rem;
+        padding: 3px 6px;
+    }
+    
     .position {
-        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-        color: white;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        font-weight: 500;
-        display: inline-block;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        font-size: 0.75rem;
+        padding: 3px 6px;
     }
-
+    
     .value {
-        font-weight: bold;
-        font-size: 1.1rem;
-        color: #27ae60;
-        text-align: right;
+        font-size: 0.9rem;
     }
-
-    .value::before {
-        content: "💰 ";
-    }
-
-    .stats {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        padding: 20px;
-        text-align: center;
-        color: #495057;
-        font-weight: 500;
-        border-top: 3px solid rgba(102, 126, 234, 0.3);
-    }
-
+    
     .scroll-indicator {
-        position: fixed;
-        top: 50%;
-        right: 20px;
-        transform: translateY(-50%);
-        background: rgba(102, 126, 234, 0.8);
-        color: white;
-        padding: 10px;
-        border-radius: 50%;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        animation: bounce 2s infinite;
+        right: 15px;
+        padding: 8px;
     }
+}
 
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+/* Móviles pequeños (320px - 480px) */
+@media (max-width: 480px) {
+    body {
+        padding: 8px;
     }
-
-    @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {
-            transform: translateY(-50%);
-        }
-        40% {
-            transform: translateY(-60%);
-        }
-        60% {
-            transform: translateY(-55%);
-        }
+    
+    .container {
+        border-radius: 10px;
     }
-
-    @media (max-width: 768px) {
-        .header h1 {
-            font-size: 2rem;
-        }
-        
-        .wildcard {
-            position: static;
-            transform: none;
-            margin: 10px auto 0;
-        }
-        
-        th, td {
-            padding: 10px 8px;
-            font-size: 0.9rem;
-        }
-        
-        .table-container {
-            padding: 15px;
-        }
-
-        .rank-number {
-            width: 35px;
-            height: 35px;
-            font-size: 1rem;
-        }
+    
+    .header {
+        padding: 15px 10px;
     }
+    
+    .header h1 {
+        font-size: 1.6rem;
+        margin-bottom: 5px;
+    }
+    
+    .header p {
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+    
+    .wildcard {
+        width: 40px;
+        height: 50px;
+        font-size: 1.1rem;
+    }
+    
+    .table-container {
+        padding: 12px;
+        max-height: 50vh;
+    }
+    
+    table {
+        min-width: 450px;
+    }
+    
+    th {
+        padding: 10px 4px;
+        font-size: 0.8rem;
+        letter-spacing: 0.3px;
+    }
+    
+    td {
+        padding: 8px 4px;
+        font-size: 0.8rem;
+    }
+    
+    .rank-number {
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+    }
+    
+    .player-name {
+        font-size: 0.9rem;
+    }
+    
+    .team-name {
+        font-size: 0.7rem;
+        padding: 2px 4px;
+    }
+    
+    .position {
+        font-size: 0.7rem;
+        padding: 2px 4px;
+    }
+    
+    .value {
+        font-size: 0.85rem;
+    }
+    
+    .scroll-indicator {
+        right: 10px;
+        padding: 6px;
+        font-size: 0.9rem;
+    }
+    
+    /* Ajustes específicos para pantallas muy pequeñas */
+    tbody tr:hover {
+        transform: translateX(2px);
+    }
+}
+
+/* Móviles muy pequeños (menos de 320px) */
+@media (max-width: 319px) {
+    body {
+        padding: 5px;
+    }
+    
+    .header h1 {
+        font-size: 1.4rem;
+    }
+    
+    .header p {
+        font-size: 0.8rem;
+    }
+    
+    .wildcard {
+        width: 35px;
+        height: 45px;
+        font-size: 1rem;
+    }
+    
+    .table-container {
+        padding: 8px;
+    }
+    
+    table {
+        min-width: 400px;
+    }
+    
+    th, td {
+        padding: 6px 3px;
+        font-size: 0.75rem;
+    }
+    
+    .rank-number {
+        width: 25px;
+        height: 25px;
+        font-size: 0.8rem;
+    }
+    
+    .player-name {
+        font-size: 0.85rem;
+    }
+    
+    .team-name,
+    .position {
+        font-size: 0.65rem;
+        padding: 2px 3px;
+    }
+    
+    .value {
+        font-size: 0.8rem;
+    }
+}
+
+/* Ajustes para orientación horizontal en móviles */
+@media (max-width: 767px) and (orientation: landscape) {
+    .table-container {
+        max-height: 40vh;
+    }
+    
+    .header {
+        padding: 15px;
+    }
+    
+    .header h1 {
+        font-size: 1.6rem;
+    }
+    
+    .header p {
+        font-size: 0.9rem;
+    }
+}
+
+/* Mejoras para accesibilidad táctil */
+@media (pointer: coarse) {
+    tbody tr {
+        min-height: 44px;
+    }
+    
+    th, td {
+        min-height: 44px;
+    }
+}
+
+/* Ajustes para pantallas de alta densidad */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .header h1 {
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+    
+    .rank-number {
+        text-shadow: 0 0.5px 1px rgba(0,0,0,0.3);
+    }
+}
 </style>
 </head>
 <body>
