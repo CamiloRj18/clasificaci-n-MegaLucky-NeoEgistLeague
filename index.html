@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Jugadores por Precio</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+
+    .header {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        text-align: center;
+        padding: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: shimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+        0%, 100% { transform: rotate(0deg); }
+        50% { transform: rotate(180deg); }
+    }
+
+    .header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        position: relative;
+        z-index: 1;
+    }
+
+    .header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        position: relative;
+        z-index: 1;
+    }
+
+    .wildcard {
+        position: absolute;
+        right: 30px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 60px;
+        height: 80px;
+        background: linear-gradient(145deg, #ff6b6b, #ffd93d);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border: 2px solid white;
+        z-index: 2;
+    }
+
+    .table-container {
+        padding: 30px;
+        overflow-x: auto;
+        max-height: 70vh;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .table-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .table-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #4facfe, #00f2fe);
+        border-radius: 4px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    th {
+        padding: 20px 15px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 3px solid rgba(255,255,255,0.3);
+    }
+
+    th:first-child {
+        text-align: center;
+        width: 80px;
+    }
+
+    tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    tbody tr:hover {
+        background: linear-gradient(90deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    tbody tr:nth-child(odd) {
+        background: rgba(255, 255, 255, 0.8);
+    }
+
+    tbody tr:nth-child(even) {
+        background: rgba(248, 249, 250, 0.8);
+    }
+
+    tbody tr:nth-child(odd):hover,
+    tbody tr:nth-child(even):hover {
+        background: linear-gradient(90deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+    }
+
+    td {
+        padding: 15px;
+        font-size: 1rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .rank-number {
+        font-weight: bold;
+        font-size: 1.2rem;
+        text-align: center;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        color: white;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .rank-top {
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+    }
+
+    .rank-bottom {
+        background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+        box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+    }
+
+    /* Estilos automáticos para rankings - TOP 1-32 (Verde) */
+    tbody tr:nth-child(-n+32) .rank-number {
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+    }
+
+    /* Estilos automáticos para rankings - 33 en adelante (Naranja) */
+    tbody tr:nth-child(n+33) .rank-number {
+        background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+        box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+    }
+
+    .player-name {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 1.1rem;
+    }
+
+    .team-name {
+        font-weight: 500;
+        color: #34495e;
+        background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        padding: 5px 12px;
+        border-radius: 20px;
+        display: inline-block;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .position {
+        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: inline-block;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+
+    .value {
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: #27ae60;
+        text-align: right;
+    }
+
+    .value::before {
+        content: "💰 ";
+    }
+
+    .stats {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 20px;
+        text-align: center;
+        color: #495057;
+        font-weight: 500;
+        border-top: 3px solid rgba(102, 126, 234, 0.3);
+    }
+
+    .scroll-indicator {
+        position: fixed;
+        top: 50%;
+        right: 20px;
+        transform: translateY(-50%);
+        background: rgba(102, 126, 234, 0.8);
+        color: white;
+        padding: 10px;
+        border-radius: 50%;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        animation: bounce 2s infinite;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(-50%);
+        }
+        40% {
+            transform: translateY(-60%);
+        }
+        60% {
+            transform: translateY(-55%);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .header h1 {
+            font-size: 2rem;
+        }
+        
+        .wildcard {
+            position: static;
+            transform: none;
+            margin: 10px auto 0;
+        }
+        
+        th, td {
+            padding: 10px 8px;
+            font-size: 0.9rem;
+        }
+        
+        .table-container {
+            padding: 15px;
+        }
+
+        .rank-number {
+            width: 35px;
+            height: 35px;
+            font-size: 1rem;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Top Jugadores por Precio</h1>
+            <p>Ranking oficial de los mejores jugadores del torneo</p>
+            <div class="wildcard">🃏</div>
+        </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Top</th>
+                        <th>Nombre</th>
+                        <th>Equipo</th>
+                        <th>Posición</th>
+                        <th>Precio</th>
+                    </tr>
+                </thead>
+                
+           <tbody>
+                    <tr><td><div class="rank-number">1</div></td><td class="player-name">Jordan</td><td><span class="team">Royal</span></td><td class="position">RW/LW/CF</td><td class="price">3M¥</td></tr>
+                    <tr><td><div class="rank-number">2</div></td><td class="player-name">Rodrigo</td><td><span class="team">Predators</span></td><td class="position">LW/CF/RW</td><td class="price">3M¥</td></tr>
+                    <tr><td><div class="rank-number">3</div></td><td class="player-name">Franco</td><td><span class="team">Royal</span></td><td class="position">RW/CF</td><td class="price">3M¥</td></tr>
+                    <tr><td><div class="rank-number">4</div></td><td class="player-name">Joseph</td><td><span class="team">Royal</span></td><td class="position">CF</td><td class="price">3M¥</td></tr>
+                    <tr><td><div class="rank-number">5</div></td><td class="player-name">Julio</td><td><span class="team">Emperators</span></td><td class="position">GK/CM</td><td class="price">3M¥</td></tr>
+                    <tr><td><div class="rank-number">6</div></td><td class="player-name">Sebastián</td><td><span class="team">Predators</span></td><td class="position">CF/LW/RW</td><td class="price">3M¥</td></tr>
+                    <tr><td><div class="rank-number">7</div></td><td class="player-name">Alex</td><td><span class="team">Predators</span></td><td class="position">CF/LW/RW</td><td class="price">3M¥</td></tr>
+                    <tr><td><div class="rank-number">8</div></td><td class="player-name">Chris</td><td><span class="team">Predators</span></td><td class="position">GK</td><td class="price">3M¥</td></tr>
+                    <tr><td><div class="rank-number">9</div></td><td class="player-name">Emmanuel</td><td><span class="team">Predators</span></td><td class="position">CM</td><td class="price">3M¥</td></tr>
+                    <tr><td><div class="rank-number">10</div></td><td class="player-name">Samuel</td><td><span class="team">Berserk Dormunt</span></td><td class="position">CF</td><td class="price">3M¥</td></tr>
+                    <tr><td><div class="rank-number">11</div></td><td class="player-name">Achelos</td><td><span class="team">Berserk Dormunt</span></td><td class="position">LW/CM</td><td class="price">3M¥</td></tr>
+                    <tr><td><div class="rank-number">12</div></td><td class="player-name">Tibu</td><td><span class="team">Berserk Dormunt</span></td><td class="position">GK</td><td class="price">3M¥</td></tr>
+                    <tr><td><div class="rank-number">13</div></td><td class="player-name">Jared</td><td><span class="team">Bastard</span></td><td class="position">GK</td><td class="price">3M¥</td></tr>
+                    <tr><td><div class="rank-number">14</div></td><td class="player-name">Tamalito</td><td><span class="team">Berserk Dormunt</span></td><td class="position">GK</td><td class="price">2.91M¥</td></tr>
+                    <tr><td><div class="rank-number">15</div></td><td class="player-name">KAISER</td><td><span class="team">Royal</span></td><td class="position">RW/LW/CF</td><td class="price">2.9M¥</td></tr>
+                    <tr><td><div class="rank-number">16</div></td><td class="player-name">Cat</td><td><span class="team">Royal</span></td><td class="position">CM/GK</td><td class="price">2.89M¥</td></tr>
+                    <tr><td><div class="rank-number">17</div></td><td class="player-name">Iker</td><td><span class="team">Berserk Dormunt</span></td><td class="position">RW/CF</td><td class="price">2.8M¥</td></tr>
+                    <tr><td><div class="rank-number">18</div></td><td class="player-name">Sae Itoshi</td><td><span class="team">Berserk Dormunt</span></td><td class="position">CM</td><td class="price">2.75M¥</td></tr>
+                    <tr><td><div class="rank-number">19</div></td><td class="player-name">Log</td><td><span class="team">Berserk Dormunt</span></td><td class="position">LW/RW/CF</td><td class="price">2.7M¥</td></tr>
+                    <tr><td><div class="rank-number">20</div></td><td class="player-name">Dylan</td><td><span class="team">Bastard</span></td><td class="position">GK</td><td class="price">2.6M¥</td></tr>
+                    <tr><td><div class="rank-number">21</div></td><td class="player-name">Gojo</td><td><span class="team">Emperators</span></td><td class="position">CF/LW</td><td class="price">2.6M¥</td></tr>
+                    <tr><td><div class="rank-number">22</div></td><td class="player-name">Juan</td><td><span class="team">Predators</span></td><td class="position">RW/GK</td><td class="price">2.5M¥</td></tr>
+                    <tr><td><div class="rank-number">23</div></td><td class="player-name">Cris</td><td><span class="team">Royal</span></td><td class="position">RW/LW/CF</td><td class="price">2.3M¥</td></tr>
+                    <tr><td><div class="rank-number">24</div></td><td class="player-name">HH</td><td><span class="team">Berserk Dormunt</span></td><td class="position">CF/LW/RW</td><td class="price">2.3M¥</td></tr>
+                    <tr><td><div class="rank-number">25</div></td><td class="player-name">Seen</td><td><span class="team">Emperators</span></td><td class="position">RW/CM</td><td class="price">2.2M¥</td></tr>
+                    <tr><td><div class="rank-number">26</div></td><td class="player-name">Guts</td><td><span class="team">Emperators</span></td><td class="position">CM/GK</td><td class="price">2.1M¥</td></tr>
+                    <tr><td><div class="rank-number">27</div></td><td class="player-name">~E~</td><td><span class="team">Manshine City</span></td><td class="position">CF</td><td class="price">2.1M¥</td></tr>
+                    <tr><td><div class="rank-number">28</div></td><td class="player-name">Hiro</td><td><span class="team">Royal</span></td><td class="position">GK</td><td class="price">2M¥</td></tr>
+                    <tr><td><div class="rank-number">29</div></td><td class="player-name">Chantilli</td><td><span class="team">Predators</span></td><td class="position">LW/CM</td><td class="price">2M¥</td></tr>
+                    <tr><td><div class="rank-number">30</div></td><td class="player-name">Abner</td><td><span class="team">Bastard</span></td><td class="position">CF/LW/RW</td><td class="price">2M¥</td></tr>
+                    <tr><td><div class="rank-number">31</div></td><td class="player-name">Santi</td><td><span class="team">Manshine City</span></td><td class="position">GK/LW/RW/CF</td><td class="price">2M¥</td></tr>
+                    <tr><td><div class="rank-number">32</div></td><td class="player-name">Gael</td><td><span class="team">Royal</span></td><td class="position">CM/RW</td><td class="price">1.93M¥</td></tr>
+                    <tr><td><div class="rank-number">33</div></td><td class="player-name">Chuy</td><td><span class="team">Royal</span></td><td class="position">CM/GK</td><td class="price">1.93M¥</td></tr>
+                    <tr><td><div class="rank-number">34</div></td><td class="player-name">Nethel</td><td><span class="team">Royal</span></td><td class="position">CM</td><td class="price">1.9M¥</td></tr>
+                    <tr><td><div class="rank-number">35</div></td><td class="player-name">Samuel</td><td><span class="team">Predators</span></td><td class="position">LW/RW</td><td class="price">1.9M¥</td></tr>
+                    <tr><td><div class="rank-number">36</div></td><td class="player-name">Taller</td><td><span class="team">Manshine City</span></td><td class="position">LW</td><td class="price">1.9M¥</td></tr>
+                    <tr><td><div class="rank-number">37</div></td><td class="player-name">Santy</td><td><span class="team">Manshine City</span></td><td class="position">CM</td><td class="price">1.9M¥</td></tr>
+                    <tr><td><div class="rank-number">38</div></td><td class="player-name">Cristian</td><td><span class="team">Manshine City</span></td><td class="position">CM</td><td class="price">1.8M¥</td></tr>
+                    <tr><td><div class="rank-number">39</div></td><td class="player-name">Madara</td><td><span class="team">Emperators</span></td><td class="position">LW/RW</td><td class="price">1.7M¥</td></tr>
+                    <tr><td><div class="rank-number">40</div></td><td class="player-name">ISAGI YOICHI</td><td><span class="team">Barcha</span></td><td class="position">RW/LW/CF</td><td class="price">1.7M¥</td></tr>
+                    <tr><td><div class="rank-number">41</div></td><td class="player-name">Santucan</td><td><span class="team">Emperators</span></td><td class="position">CF/LW</td><td class="price">1.5M¥</td></tr>
+                    <tr><td><div class="rank-number">42</div></td><td class="player-name">Punto 🐧</td><td><span class="team">Bastard</span></td><td class="position">CM</td><td class="price">1.5M¥</td></tr>
+                    <tr><td><div class="rank-number">43</div></td><td class="player-name">Alexx</td><td><span class="team">Bastard</span></td><td class="position">All</td><td class="price">1.5M¥</td></tr>
+                    <tr><td><div class="rank-number">44</div></td><td class="player-name">Mr_a</td><td><span class="team">Royal</span></td><td class="position">LW/CM</td><td class="price">1.42M¥</td></tr>
+                    <tr><td><div class="rank-number">45</div></td><td class="player-name">_juanito</td><td><span class="team">Manshine City</span></td><td class="position">LW/RW/CF/GK</td><td class="price">1.4M¥</td></tr>
+                    <tr><td><div class="rank-number">46</div></td><td class="player-name">Shane</td><td><span class="team">Berserk Dormunt</span></td><td class="position">LW/RW/CF</td><td class="price">1.4M¥</td></tr>
+                    <tr><td><div class="rank-number">47</div></td><td class="player-name">Said</td><td><span class="team">Barcha</span></td><td class="position">CF/RW/LW</td><td class="price">1.4M¥</td></tr>
+                    <tr><td><div class="rank-number">48</div></td><td class="player-name">Moises</td><td><span class="team">Bastard</span></td><td class="position">RW/LW</td><td class="price">1.4M¥</td></tr>
+                    <tr><td><div class="rank-number">49</div></td><td class="player-name">Dark</td><td><span class="team">Bastard</span></td><td class="position">LW/RW</td><td class="price">1.3M¥</td></tr>
+                    <tr><td><div class="rank-number">50</div></td><td class="player-name">Sikan</td><td><span class="team">Predators</span></td><td class="position">?</td><td class="price">1.2M¥</td></tr>
+                    <tr><td><div class="rank-number">51</div></td><td class="player-name">David</td><td><span class="team">Bastard</span></td><td class="position">CF</td><td class="price">1.2M¥</td></tr>
+                    <tr><td><div class="rank-number">52</div></td><td class="player-name">Leonel</td><td><span class="team">Bastard</span></td><td class="position">CM/RW/LW</td><td class="price">1.2M¥</td></tr>
+                    <tr><td><div class="rank-number">53</div></td><td class="player-name">alysmeg</td><td><span class="team">Ubers</span></td><td class="position">CF</td><td class="price">1.17M¥</td></tr>
+                    <tr><td><div class="rank-number">54</div></td><td class="player-name">Yayi</td><td><span class="team">Emperators</span></td><td class="position">CF</td><td class="price">1M¥</td></tr>
+                    <tr><td><div class="rank-number">55</div></td><td class="player-name">Kenai</td><td><span class="team">Bastard</span></td><td class="position">CF/LW</td><td class="price">1M¥</td></tr>
+                    <tr><td><div class="rank-number">56</div></td><td class="player-name">Pato</td><td><span class="team">Bastard</span></td><td class="position">CF/LW/RW/CM</td><td class="price">970K¥</td></tr>
+                    <tr><td><div class="rank-number">57</div></td><td class="player-name">Marii</td><td><span class="team">Ubers</span></td><td class="position">GK</td><td class="price">950K¥</td></tr>
+                    <tr><td><div class="rank-number">58</div></td><td class="player-name">enzo</td><td><span class="team">Ubers</span></td><td class="position">LW</td><td class="price">900K¥</td></tr>
+                    <tr><td><div class="rank-number">59</div></td><td class="player-name">Isagi</td><td><span class="team">Bastard</span></td><td class="position">RW/LW</td><td class="price">870K¥</td></tr>
+                    <tr><td><div class="rank-number">60</div></td><td class="player-name">Amir/cacheton</td><td><span class="team">Ubers</span></td><td class="position">CF/RW</td><td class="price">800K¥</td></tr>
+                    <tr><td><div class="rank-number">61</div></td><td class="player-name">Farid</td><td><span class="team">Berserk Dormunt</span></td><td class="position">GK</td><td class="price">800K¥</td></tr>
+                    <tr><td><div class="rank-number">62</div></td><td class="player-name">yvchxx</td><td><span class="team">Ubers</span></td><td class="position">CM</td><td class="price">700K¥</td></tr>
+                    <tr><td><div class="rank-number">63</div></td><td class="player-name">BAIJEET</td><td><span class="team">Barcha</span></td><td class="position">CF/LW/CM</td><td class="price">575K¥</td></tr>
+                    <tr><td><div class="rank-number">64</div></td><td class="player-name">diego</td><td><span class="team">Ubers</span></td><td class="position">GK</td><td class="price">550K¥</td></tr>
+                    <tr><td><div class="rank-number">65</div></td><td class="player-name">Fabian</td><td><span class="team">Barcha</span></td><td class="position">CF/LW/RW</td><td class="price">510K¥</td></tr>
+                    <tr><td><div class="rank-number">66</div></td><td class="player-name">Abejita</td><td><span class="team">Predators</span></td><td class="position">LW</td><td class="price">500K¥</td></tr>
+                    <tr><td><div class="rank-number">67</div></td><td class="player-name">ayramceto</td><td><span class="team">Ubers</span></td><td class="position">?</td><td class="price">500K¥</td></tr>
+                    <tr><td><div class="rank-number">68</div></td><td class="player-name">Soto prime</td><td><span class="team">Ubers</span></td><td class="position">CM</td><td class="price">500K¥</td></tr>
+                    <tr><td><div class="rank-number">69</div></td><td class="player-name">Hans</td><td><span class="team">Emperators</span></td><td class="position">RW/LW</td><td class="price">500K¥</td></tr>
+                    <tr><td><div class="rank-number">70</div></td><td class="player-name">Eric</td><td><span class="team">Manshine City</span></td><td class="position">LW</td><td class="price">500K¥</td></tr>
+                    <tr><td><div class="rank-number">71</div></td><td class="player-name">Smkz</td><td><span class="team">Barcha</span></td><td class="position">RW/LW/CF</td><td class="price">480K¥</td></tr>
+                    <tr><td><div class="rank-number">72</div></td><td class="player-name">ION</td><td><span class="team">Barcha</span></td><td class="position">RW/CF/GK</td><td class="price">425K¥</td></tr>
+                    <tr><td><div class="rank-number">73</div></td><td class="player-name">Gordo</td><td><span class="team">Ubers</span></td><td class="position">LW</td><td class="price">400K¥</td></tr>
+                    <tr><td><div class="rank-number">74</div></td><td class="player-name">Rodrigol</td><td><span class="team">Ubers</span></td><td class="position">CM</td><td class="price">300K¥</td></tr>
+                    <tr><td><div class="rank-number">75</div></td><td class="player-name">Juan de la cruz</td><td><span class="team">Ubers</span></td><td class="position">LW</td><td class="price">200K¥</td></tr>
+                    <tr><td><div class="rank-number">76</div></td><td class="player-name">haru</td><td><span class="team">Ubers</span></td><td class="position">RW</td><td class="price">180K¥</td></tr>
+                    <tr><td><div class="rank-number">77</div></td><td class="player-name">Luis</td><td><span class="team">Royal</span></td><td class="position">GK/LW</td><td class="price">125K¥</td></tr>
+                    <tr><td><div class="rank-number">78</div></td><td class="player-name">Penta</td><td><span class="team">Royal</span></td><td class="position">GK/Atacante</td><td class="price">100K¥</td></tr>
+                    <tr><td><div class="rank-number">79</div></td><td class="player-name">Matías</td><td><span class="team">Royal</span></td><td class="position">Extremo</td><td class="price">55K¥</td></tr>
+                    <tr><td><div class="rank-number">80</div></td><td class="player-name">Andreé</td><td><span class="team">Royal</span></td><td class="position">RW</td><td class="price">45K¥</td></tr>
+                    <tr><td><div class="rank-number">81</div></td><td class="player-name">Nagi</td><td><span class="team">Emperators</span></td><td class="position">GK</td><td class="price">0¥</td></tr>
+                    <tr><td><div class="rank-number">82</div></td><td class="player-name">NWLAngel</td><td><span class="team">Barcha</span></td><td class="position">RW/LW/GK</td><td class="price">0¥</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+   
